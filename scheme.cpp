@@ -94,7 +94,7 @@ struct DefaultCallback: public AbstractCallback {
     }
 };
 
-int main() {
+int oldMain() {
     unsigned stepsX = 100;
     unsigned stepsT = 100;
     Parameters parameters;

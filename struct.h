@@ -42,3 +42,9 @@ struct DiagonalMatrix {
 
     void solve(double *rightCol);
 };
+
+void process(unsigned           stepsX,
+             unsigned           stepsT,
+             InitializeFunction initFunction,
+             Parameters        &parameters,
+             AbstractCallback  &callback);
