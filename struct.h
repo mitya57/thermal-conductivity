@@ -2,9 +2,10 @@ typedef double (*InitializeFunction) (double);
 
 struct AbstractCallback {
     unsigned stepsX;
+    unsigned stepsT;
 
-    AbstractCallback(unsigned _stepsX):
-      stepsX(_stepsX)
+    AbstractCallback(unsigned _stepsX, unsigned _stepsT):
+      stepsX(_stepsX), stepsT(_stepsT)
     {}
     virtual ~AbstractCallback() {}
     virtual void process(unsigned stepT, double *values) = 0;

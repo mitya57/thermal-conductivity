@@ -77,8 +77,8 @@ void process(unsigned           stepsX,
 struct DefaultCallback: public AbstractCallback {
     FILE *output;
 
-    DefaultCallback(unsigned _stepsX):
-      AbstractCallback(_stepsX),
+    DefaultCallback(unsigned _stepsX, unsigned _stepsT):
+      AbstractCallback(_stepsX, _stepsT),
       output(fopen("results.txt", "w"))
     {}
     virtual ~DefaultCallback() {
@@ -98,7 +98,7 @@ int main() {
     unsigned stepsX = 100;
     unsigned stepsT = 100;
     Parameters parameters;
-    DefaultCallback callback(stepsX);
+    DefaultCallback callback(stepsX, stepsT);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
     process(stepsX, stepsT, sin, parameters, callback);
