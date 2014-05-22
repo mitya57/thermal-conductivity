@@ -1,5 +1,15 @@
 typedef double (*InitializeFunction) (double);
 
+struct AbstractCallback {
+    unsigned stepsX;
+
+    AbstractCallback(unsigned _stepsX):
+      stepsX(_stepsX)
+    {}
+    virtual ~AbstractCallback() {}
+    virtual void process(unsigned stepT, double *values) = 0;
+};
+
 enum SchemeType {
     ExplicitScheme,
     ImplicitScheme

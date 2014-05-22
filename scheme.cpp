@@ -54,37 +54,53 @@ void processIteration(DiagonalMatrix   *matrix,
 void process(unsigned           stepsX,
              unsigned           stepsT,
              InitializeFunction initFunction,
-             Parameters        *parameters) {
+             Parameters        *parameters,
+             AbstractCallback  &callback) {
     double stepX = 1. / stepsX;
     double *oldValues = new double[stepsX];
     double *newValues = new double[stepsX];
     DiagonalMatrix matrix(stepsX);
     parameters->h = stepX;
     parameters->tau = 1. / stepsT;
-    unsigned m;
-    for (m = 0; m < stepsX; ++m) {
+    for (unsigned m = 0; m < stepsX; ++m) {
         oldValues[m] = initFunction(stepX * m);
     }
-    FILE *output = fopen("results.txt", "w");
     for (unsigned n = 0; n < stepsT; ++n) {
-        printf("Time iteration is %u.\n", n + 1);
-        fprintf(output, "%u:", n);
-        for (m = 0; m < stepsX; ++m) {
-            fprintf(output, " %f", oldValues[m]);
-        }
-        fprintf(output, "\n");
+        callback.process(n, oldValues);
         processIteration(&matrix, oldValues, newValues, parameters);
         memcpy(oldValues, newValues, stepsX * sizeof(double));
     }
-    fclose(output);
     delete[] oldValues;
     delete[] newValues;
 }
 
+struct DefaultCallback: public AbstractCallback {
+    FILE *output;
+
+    DefaultCallback(unsigned _stepsX):
+      AbstractCallback(_stepsX),
+      output(fopen("results.txt", "w"))
+    {}
+    virtual ~DefaultCallback() {
+        fclose(output);
+    }
+
+    virtual void process(unsigned stepT, double *values) {
+        fprintf(output, "%u:", stepT);
+        for (unsigned m = 0; m < stepsX; ++m) {
+            fprintf(output, " %f", values[m]);
+        }
+        fprintf(output, "\n");
+    }
+};
+
 int main() {
+    unsigned stepsX = 100;
+    unsigned stepsT = 100;
     Parameters parameters;
+    DefaultCallback callback(stepsX);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
-    process(100, 100, sin, &parameters);
+    process(stepsX, stepsT, sin, &parameters, callback);
     return 0;
 }
