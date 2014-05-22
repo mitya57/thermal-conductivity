@@ -81,10 +81,6 @@ void process(unsigned           stepsX,
     delete[] newValues;
 }
 
-double startFunction(double x) {
-    return x;
-}
-
 int main() {
     Parameters parameters;
     parameters.a = 1;
