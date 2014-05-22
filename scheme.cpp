@@ -18,27 +18,27 @@ void DiagonalMatrix::solve(double *rightCol) {
     }
 }
 
-void processIteration(DiagonalMatrix   *matrix,
+void processIteration(DiagonalMatrix   &matrix,
                       double const     *oldValues,
                       double           *newValues,
-                      Parameters const *parameters) {
+                      Parameters const &parameters) {
     unsigned m;
-    double eta = parameters->a * parameters->tau /
-                 (2 * parameters->h * parameters->h);
-    unsigned size = matrix->size;
-    switch (parameters->type) {
+    double eta = parameters.a * parameters.tau /
+                 (2 * parameters.h * parameters.h);
+    unsigned size = matrix.size;
+    switch (parameters.type) {
     case ImplicitScheme:
         memcpy(newValues, oldValues, size * sizeof(double));
-        matrix->midDiag[0] = 1;
-        matrix->topDiag[0] = 0;
+        matrix.midDiag[0] = 1;
+        matrix.topDiag[0] = 0;
         for (m = 1; m < size - 1; ++m) {
-            matrix->botDiag[m - 1] = -eta;
-            matrix->midDiag[m] = 1 + 2 * eta;
-            matrix->topDiag[m] = -eta;
+            matrix.botDiag[m - 1] = -eta;
+            matrix.midDiag[m] = 1 + 2 * eta;
+            matrix.topDiag[m] = -eta;
         }
-        matrix->midDiag[size - 1] = 1;
-        matrix->botDiag[size - 2] = 0;
-        matrix->solve(newValues);
+        matrix.midDiag[size - 1] = 1;
+        matrix.botDiag[size - 2] = 0;
+        matrix.solve(newValues);
         break;
     case ExplicitScheme:
         newValues[0] = oldValues[0];
@@ -54,20 +54,20 @@ void processIteration(DiagonalMatrix   *matrix,
 void process(unsigned           stepsX,
              unsigned           stepsT,
              InitializeFunction initFunction,
-             Parameters        *parameters,
+             Parameters        &parameters,
              AbstractCallback  &callback) {
     double stepX = 1. / stepsX;
     double *oldValues = new double[stepsX];
     double *newValues = new double[stepsX];
     DiagonalMatrix matrix(stepsX);
-    parameters->h = stepX;
-    parameters->tau = 1. / stepsT;
+    parameters.h = stepX;
+    parameters.tau = 1. / stepsT;
     for (unsigned m = 0; m < stepsX; ++m) {
         oldValues[m] = initFunction(stepX * m);
     }
     for (unsigned n = 0; n < stepsT; ++n) {
         callback.process(n, oldValues);
-        processIteration(&matrix, oldValues, newValues, parameters);
+        processIteration(matrix, oldValues, newValues, parameters);
         memcpy(oldValues, newValues, stepsX * sizeof(double));
     }
     delete[] oldValues;
@@ -101,6 +101,6 @@ int main() {
     DefaultCallback callback(stepsX);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
-    process(stepsX, stepsT, sin, &parameters, callback);
+    process(stepsX, stepsT, sin, parameters, callback);
     return 0;
 }
