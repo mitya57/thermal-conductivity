@@ -2,5 +2,5 @@ CONFIG += debug warn_all
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-SOURCES += drawarea.cpp scheme.cpp main.cpp
-HEADERS += drawarea.h   struct.h
+SOURCES += drawarea.cpp window.cpp scheme.cpp main.cpp
+HEADERS += drawarea.h   window.h   struct.h

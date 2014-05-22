@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <cmath>
 #include <cstring>
-#include "drawarea.h"
+#include "window.h"
 #include "struct.h"
 
 struct StoreCallback: public AbstractCallback {
@@ -29,18 +29,18 @@ int main(int argc, char **argv) {
     unsigned stepsT = 100;
 
     QApplication app(argc, argv);
-    DrawArea drawArea;
+    MainWindow window(stepsX - 1);
     Parameters parameters;
     StoreCallback callback(stepsX, stepsT);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
     process(stepsX, stepsT, startFunction, parameters, callback);
 
+    DrawArea &drawArea = window.drawArea;
     drawArea.data = callback.data;
     drawArea.stepsT = stepsT;
     drawArea.stepsX = stepsX;
     drawArea.stepT = 1;
-    drawArea.show();
-    drawArea.repaint();
+    window.show();
     return app.exec();
 }
