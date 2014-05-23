@@ -8,7 +8,7 @@ struct StoreCallback: public AbstractCallback {
 
     StoreCallback(unsigned _stepsX, unsigned _stepsT):
       AbstractCallback(_stepsX, _stepsT),
-      data(new double[stepsX * stepsT])
+      data(new double[stepsX * (stepsT + 1)])
     {}
     virtual ~StoreCallback() {
         delete[] data;
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     unsigned stepsT = 100;
 
     QApplication app(argc, argv);
-    MainWindow window(stepsX - 1);
+    MainWindow window(stepsT);
     Parameters parameters;
     StoreCallback callback(stepsX, stepsT);
     parameters.a = 1;

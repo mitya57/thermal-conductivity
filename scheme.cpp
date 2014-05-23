@@ -78,6 +78,7 @@ void process(unsigned           stepsX,
         processIteration(matrix, oldValues, newValues, parameters);
         memcpy(oldValues, newValues, stepsX * sizeof(double));
     }
+    callback.process(stepsT, newValues);
     delete[] oldValues;
     delete[] newValues;
 }
@@ -109,6 +110,7 @@ int oldMain() {
     DefaultCallback callback(stepsX, stepsT);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
+    parameters.rightPartFunction = 0;
     process(stepsX, stepsT, sin, parameters, callback);
     return 0;
 }
