@@ -1,1 +1,5 @@
+Makefile
+*.o
+moc_*.cpp
 results.txt
+scheme
