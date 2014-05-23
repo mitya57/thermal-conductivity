@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <cmath>
 #include <cstring>
 #include "window.h"
 #include "struct.h"
@@ -21,7 +20,11 @@ struct StoreCallback: public AbstractCallback {
 };
 
 double startFunction(double x) {
-    return sin(x * 2 * M_PI);
+    return x * (1 - x) * (1 - x);
+}
+
+double rightPartFunction(double x, double currentValue) {
+    return x * x * currentValue + 1;
 }
 
 int main(int argc, char **argv) {
@@ -34,6 +37,7 @@ int main(int argc, char **argv) {
     StoreCallback callback(stepsX, stepsT);
     parameters.a = 1;
     parameters.type = ImplicitScheme;
+    parameters.rightPartFunction = rightPartFunction;
     process(stepsX, stepsT, startFunction, parameters, callback);
 
     DrawArea &drawArea = window.drawArea;

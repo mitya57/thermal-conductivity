@@ -1,4 +1,5 @@
 typedef double (*InitializeFunction) (double);
+typedef double (*RightPartFunction) (double, double);
 
 struct AbstractCallback {
     unsigned stepsX;
@@ -21,6 +22,7 @@ struct Parameters {
     double a;
     double tau;
     double h;
+    RightPartFunction rightPartFunction;
 };
 
 struct DiagonalMatrix {

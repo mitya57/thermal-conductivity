@@ -35,6 +35,10 @@ void processIteration(DiagonalMatrix   &matrix,
             matrix.botDiag[m - 1] = -eta;
             matrix.midDiag[m] = 1 + 2 * eta;
             matrix.topDiag[m] = -eta;
+            if (parameters.rightPartFunction) {
+                newValues[m] -= parameters.tau *
+                    parameters.rightPartFunction(parameters.h * m, oldValues[m]);
+            }
         }
         matrix.midDiag[size - 1] = 1;
         matrix.botDiag[size - 2] = 0;
@@ -44,7 +48,11 @@ void processIteration(DiagonalMatrix   &matrix,
         newValues[0] = oldValues[0];
         for (m = 1; m < size - 1; ++m) {
             newValues[m] = oldValues[m] + eta * (
-                           oldValues[m - 1] - 2 * oldValues[0] + oldValues[m + 1]);
+                           oldValues[m - 1] - 2 * oldValues[m] + oldValues[m + 1]);
+            if (parameters.rightPartFunction) {
+                newValues[m] -= parameters.tau *
+                    parameters.rightPartFunction(parameters.h * m, oldValues[m]);
+            }
         }
         newValues[size - 1] = oldValues[size - 1];
         break;
