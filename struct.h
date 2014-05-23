@@ -17,12 +17,18 @@ enum SchemeType {
     ImplicitScheme
 };
 
+enum BoundaryCondition {
+    CircularCondition,
+    OneZeroCondition
+}
+
 struct Parameters {
     SchemeType type;
     double a;
     double tau;
     double h;
     RightPartFunction rightPartFunction;
+    BoundaryCondition condition;
 };
 
 struct DiagonalMatrix {

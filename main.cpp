@@ -36,9 +36,11 @@ int main(int argc, char **argv) {
     if (argv[1][0] == '1') {
         startFunction = startFunction1;
         parameters.rightPartFunction = 0;
+        parameters.boundaryCondition = CircularCondition;
     } else if (argv[1][0] == '2') {
         startFunction = startFunction2;
         parameters.rightPartFunction = rightPartFunction2;
+        parameters.boundaryCondition = OneZeroCondition;
     } else {
         throw std::out_of_range("Valid program numbers are 1 and 2.");
     }
