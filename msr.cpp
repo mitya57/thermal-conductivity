@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "struct.h"
 
-static const double accuracy = 1e-3;
+static const double accuracy = 1e-10;
 static const unsigned max_iter = 1000;
 
 MsrMatrix::MsrMatrix(unsigned size,
