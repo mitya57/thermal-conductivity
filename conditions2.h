@@ -3,5 +3,5 @@ double startFunction2(double x) {
 }
 
 double rightPartFunction2(double x, double currentValue) {
-    return x * x * currentValue + 1;
+    return -(x * x * currentValue + 1);
 }

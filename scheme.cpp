@@ -4,21 +4,7 @@
 #include <cstring>
 #include "struct.h"
 
-void DiagonalMatrix::solve(double *rightCol) {
-    unsigned s;
-    for (s = 0; s < size - 1; ++s) {
-        topDiag[s] /= midDiag[s];
-        rightCol[s] /= midDiag[s];
-        midDiag[s + 1] -= botDiag[s] * topDiag[s];
-        rightCol[s + 1] -= botDiag[s] * rightCol[s];
-    }
-    rightCol[size - 1] /= midDiag[size - 1];
-    for (s = size - 1; s >= 1; --s) {
-        rightCol[s - 1] -= topDiag[s - 1] * rightCol[s];
-    }
-}
-
-void processIteration(DiagonalMatrix   &matrix,
+void processIteration(MsrMatrix        &matrix,
                       double const     *oldValues,
                       double           *newValues,
                       Parameters const &parameters) {
@@ -28,21 +14,35 @@ void processIteration(DiagonalMatrix   &matrix,
     unsigned size = matrix.size;
     switch (parameters.type) {
     case ImplicitScheme:
-        memcpy(newValues, oldValues, size * sizeof(double));
-        matrix.midDiag[0] = 1;
-        matrix.topDiag[0] = 0;
+        memcpy(matrix.rightCol, oldValues, size * sizeof(double));
+        matrix.clear();
+        matrix.appendElement(0, 0, -1.);
+        if (parameters.boundaryCondition == CircularCondition) {
+            matrix.appendElement(0, size - 1, 1.);
+            matrix.rightCol[0] = 0.;
+        } else {
+            matrix.appendElement(0, 1, 1.);
+            matrix.rightCol[0] = parameters.h;
+        }
         for (m = 1; m < size - 1; ++m) {
-            matrix.botDiag[m - 1] = -eta;
-            matrix.midDiag[m] = 1 + 2 * eta;
-            matrix.topDiag[m] = -eta;
+            matrix.appendElement(m, m - 1, -eta);
+            matrix.appendElement(m, m, 1 + 2 * eta);
+            matrix.appendElement(m, m + 1, -eta);
             if (parameters.rightPartFunction) {
-                newValues[m] -= parameters.tau *
+                matrix.rightCol[m] += parameters.tau *
                     parameters.rightPartFunction(parameters.h * m, oldValues[m]);
             }
         }
-        matrix.midDiag[size - 1] = 1;
-        matrix.botDiag[size - 2] = 0;
+        if (parameters.boundaryCondition == CircularCondition) {
+            matrix.appendElement(size - 1, 0, 1.);
+            matrix.appendElement(size - 1, 1, -1.);
+        }
+        matrix.appendElement(size - 1, size - 2, -1.);
+        matrix.appendElement(size - 1, size - 1, 1.);
+        matrix.rightCol[size - 1] = 0.;
+        matrix.finishFilling();
         matrix.solve(newValues);
+     // printf("Matrix solved in %u iterations.\n", matrix.solve(newValues));
         break;
     case ExplicitScheme:
         newValues[0] = oldValues[0];
@@ -50,7 +50,7 @@ void processIteration(DiagonalMatrix   &matrix,
             newValues[m] = oldValues[m] + eta * (
                            oldValues[m - 1] - 2 * oldValues[m] + oldValues[m + 1]);
             if (parameters.rightPartFunction) {
-                newValues[m] -= parameters.tau *
+                newValues[m] += parameters.tau *
                     parameters.rightPartFunction(parameters.h * m, oldValues[m]);
             }
         }
@@ -67,7 +67,7 @@ void process(unsigned           stepsX,
     double stepX = 1. / stepsX;
     double *oldValues = new double[stepsX];
     double *newValues = new double[stepsX];
-    DiagonalMatrix matrix(stepsX);
+    MsrMatrix matrix(stepsX, stepsX * 2);
     parameters.h = stepX;
     parameters.tau = 1. / stepsT;
     for (unsigned m = 0; m < stepsX; ++m) {
