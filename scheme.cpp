@@ -45,7 +45,6 @@ void processIteration(MsrMatrix        &matrix,
      // printf("Matrix solved in %u iterations.\n", matrix.solve(newValues));
         break;
     case ExplicitScheme:
-        newValues[0] = oldValues[0];
         for (m = 1; m < size - 1; ++m) {
             newValues[m] = oldValues[m] + eta * (
                            oldValues[m - 1] - 2 * oldValues[m] + oldValues[m + 1]);
@@ -54,7 +53,13 @@ void processIteration(MsrMatrix        &matrix,
                     parameters.rightPartFunction(parameters.h * m, oldValues[m]);
             }
         }
-        newValues[size - 1] = oldValues[size - 1];
+        if (parameters.boundaryCondition == CircularCondition) {
+            newValues[0] = (oldValues[0] + oldValues[1]) * .5;
+            newValues[size - 1] = (oldValues[size - 1] + oldValues[size - 2]) * .5;
+        } else {
+            newValues[0] = oldValues[1] - parameters.h;
+            newValues[size - 1] = oldValues[size - 2];
+        }
         break;
     }
 }
