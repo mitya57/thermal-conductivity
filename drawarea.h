@@ -1,6 +1,10 @@
 #include <QPaintEvent>
 #include <QWidget>
 
+void saveToPng(unsigned stepsX,
+               unsigned stepsT,
+               double  *data);
+
 class DrawArea: public QWidget {
 Q_OBJECT
 

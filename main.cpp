@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
     parameters.a = 1;
     parameters.type = ImplicitScheme;
     process(stepsX, stepsT, startFunction, parameters, callback);
+    saveToPng(stepsX, stepsT, callback.data);
 
     DrawArea &drawArea = window.drawArea;
     drawArea.data = callback.data;
