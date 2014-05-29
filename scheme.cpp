@@ -69,14 +69,13 @@ void process(unsigned           stepsX,
              InitializeFunction initFunction,
              Parameters        &parameters,
              AbstractCallback  &callback) {
-    double stepX = 1. / stepsX;
     double *oldValues = new double[stepsX];
     double *newValues = new double[stepsX];
     MsrMatrix matrix(stepsX, stepsX * 2);
-    parameters.h = stepX;
+    parameters.h = 1. / stepsX;
     parameters.tau = 1. / stepsT;
     for (unsigned m = 0; m < stepsX; ++m) {
-        oldValues[m] = initFunction(stepX * m);
+        oldValues[m] = initFunction(parameters.h * m);
     }
     for (unsigned n = 0; n < stepsT; ++n) {
         callback.process(n, oldValues);
